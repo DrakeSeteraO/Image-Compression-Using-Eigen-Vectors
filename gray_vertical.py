@@ -4,14 +4,12 @@ import matplotlib.pyplot as plt
 import matplotlib.image as image
 import numpy as np
 
+# Change this to image of your choosing
 img = image.imread('butterfly.jpg')
+
+
 gray_img = np.dot(img[...,:3], [0.2989, 0.5870, 0.1140])
 
-plt.figure(figsize=(10,6))
-plt.imshow(gray_img, cmap='gray')
-plt.title(f'Grayscale of Image')
-plt.axis('off')
-plt.show()
 
 average = np.mean(gray_img)
 print(f'Mean = {average}')
@@ -30,7 +28,15 @@ eigenVectors = eigenVectors[:, idx]
 # I used different values to compare the differences even more
 amount_to_keep = [1, 5, 15, 25, 100, 200, 2500]
 
-for amount in amount_to_keep:
+
+fig, axes = plt.subplots(2, 4, figsize=(12, 8), layout='constrained')
+
+axes[0, 0].imshow(gray_img, cmap='gray')
+axes[0, 0].set_title(f'Original Image')
+
+for i in range(len(amount_to_keep)):
+    
+    amount = amount_to_keep[i]
     totalVariance = np.sum(eigenValues)
     selectVariance = np.sum(eigenValues[:amount])
     percentage = (selectVariance / totalVariance) * 100
@@ -44,8 +50,6 @@ for amount in amount_to_keep:
 
     lossyUnCompressedImage = np.matmul(compressedImage, np.transpose(eigenVectorsToKeep)) + average
 
-    plt.figure(figsize=(10,6))
-    plt.imshow(lossyUnCompressedImage, cmap='gray')
-    plt.title(f'PCA Reconstruction with {amount} Components')
-    plt.axis('off')
-    plt.show()
+    axes[(i+1) // 4, (i+1) % 4].imshow(lossyUnCompressedImage, cmap='gray')
+    axes[(i+1) // 4, (i+1) % 4].set_title(f'PCA Reconstruction with {amount} Components')
+plt.show()
